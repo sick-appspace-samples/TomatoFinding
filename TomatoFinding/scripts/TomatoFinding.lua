@@ -26,16 +26,15 @@ local DELAY = 1000
 
 -- Creating viewer
 local viewer = View.create()
-viewer:setID('viewer2D')
 
 -- Setting up graphical overlay attributes
 local textDecoration = View.TextDecoration.create()
-textDecoration:setPosition(20, 50)
+textDecoration:setPosition(20, 20)
 textDecoration:setSize(40)
+textDecoration:setColor(0, 220, 0)
 
-local decoration = View.ShapeDecoration.create()
-decoration:setFillColor(0, 255, 0, 100) -- Transparent green
-decoration:setLineColor(0, 230, 0) -- Green
+local decoration = View.PixelRegionDecoration.create()
+decoration:setColor(0, 255, 0, 100) -- Transparent green
 
 --End of Global Scope-----------------------------------------------------------
 
@@ -44,18 +43,16 @@ decoration:setLineColor(0, 230, 0) -- Green
 -- Viewing image with text label
 --@show(img:Image, name:string)
 local function show(img, name)
-  viewer:addImage(img)
-  viewer:addText(name, textDecoration)
+  viewer:clear()
+  local imid = viewer:addImage(img)
+  viewer:addText(name, textDecoration, nil, imid)
   viewer:present()
   Script.sleep(DELAY) -- for demonstration purpose only
 end
 
 local function main()
   local img = Image.load('resources/Tomatoes.bmp')
-  viewer:clear()
-  viewer:addImage(img)
-  viewer:present()
-  Script.sleep(DELAY) -- for demonstration purpose only
+  show(img, 'Input image')
 
   -- Converting to HSV color space (Hue, Saturation, Value)
   local H, S, V = img:toHSV()
@@ -68,11 +65,12 @@ local function main()
   local tomatoes = tomatoRegion:findConnected(100)
 
   -- Visualizing tomato borders/edges
-  viewer:add(img)
+  viewer:clear()
+  local imid = viewer:addImage(img)
   for i = 1, #tomatoes do
     local border = tomatoes[i]:getBorderRegion()
     border = border:dilate(5)
-    viewer:add(border, decoration)
+    viewer:addPixelRegion(border, decoration, nil, imid)
   end
   viewer:present()
   print(#tomatoes .. ' Tomatoes found')
