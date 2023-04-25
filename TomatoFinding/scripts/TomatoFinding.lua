@@ -25,13 +25,11 @@
 local DELAY = 1000
 
 -- Creating viewer
-local viewer = View.create("viewer2D1")
+local viewer = View.create()
 
 -- Setting up graphical overlay attributes
 local textDecoration = View.TextDecoration.create()
-textDecoration:setPosition(20, 20)
-textDecoration:setSize(40)
-textDecoration:setColor(0, 220, 0)
+textDecoration:setPosition(20, 35):setSize(40):setColor(0, 220, 0)
 
 local decoration = View.PixelRegionDecoration.create()
 decoration:setColor(0, 255, 0, 100) -- Transparent green
@@ -40,12 +38,13 @@ decoration:setColor(0, 255, 0, 100) -- Transparent green
 
 --Start of Function and Event Scope---------------------------------------------
 
--- Viewing image with text label
---@show(img:Image, name:string)
+--- Viewing image with text label
+---@param img Image
+---@param name string
 local function show(img, name)
   viewer:clear()
-  local imid = viewer:addImage(img)
-  viewer:addText(name, textDecoration, nil, imid)
+  viewer:addImage(img)
+  viewer:addText(name, textDecoration)
   viewer:present()
   Script.sleep(DELAY) -- for demonstration purpose only
 end
@@ -66,12 +65,10 @@ local function main()
 
   -- Visualizing tomato borders/edges
   viewer:clear()
-  local imid = viewer:addImage(img)
-  for i = 1, #tomatoes do
-    local border = tomatoes[i]:getBorderRegion()
-    border = border:dilate(5)
-    viewer:addPixelRegion(border, decoration, nil, imid)
-  end
+  viewer:addImage(img)
+  local borders = tomatoes:getBorderRegion()
+  borders = borders:dilate(5)
+  viewer:addPixelRegion(borders, decoration)
   viewer:present()
   print(#tomatoes .. ' Tomatoes found')
   print('App finished.')
